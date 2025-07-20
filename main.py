@@ -19,8 +19,8 @@ def add(task) -> None:
         "id": id,
         "description": task,
         "status": "todo",
-        "createdAt": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-        "updatedAt": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "createdAt": date,
+        "updatedAt": date,
     }
     tasks.append(new_task)
     with open("tasks.json", "w") as file:
@@ -47,7 +47,7 @@ def main(operation) -> None:
                 raise ValueError(
                     "Task description is required for the 'add' operation."
                 )
-            task_name = str(sys.argv[2])
+            task_name = sys.argv[2]
             add(task_name)
         case "update":
             update()
@@ -62,4 +62,5 @@ if __name__ == "__main__":
         print("Error: Missing operation. Usage: python main.py <operation> [args]")
         sys.exit(1)
     operation = sys.argv[1]
+    date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     main(operation)
