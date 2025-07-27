@@ -44,8 +44,10 @@ def update(id, task):
         task_id = int(id) - 1
         tasks[task_id]["description"] = str(task)
         tasks[task_id]["updatedAt"] = date
-    except Exception:
-        print("There is no task with such id.")
+    except ValueError:
+        print(f"Invalid ID format: '{id}'. Please provide a numeric ID.")
+    except IndexError:
+        print(f"No task found with ID: {id}. Please provide a valid task ID.")
     else:
         with open("tasks.json", "w") as file:
             json.dump(tasks, file, indent=4)
