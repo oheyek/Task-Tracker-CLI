@@ -54,6 +54,46 @@ def update(id, task) -> None:
             print(f"Task updated successfully (ID: {id})")
 
 
+def mark(id, status) -> None:
+    """
+    Function to mark tasks.
+    :param id: Id of a task to be marked.
+    :param status: The status of the task.
+    """
+    tasks = []
+    try:
+        with open("tasks.json", "r") as file:
+            tasks = json.load(file)
+    except FileNotFoundError:
+        pass
+    found = False
+    try:
+        id = int(id)
+        for element in range(len(tasks)):
+            if tasks[element]["id"] == id:
+                match status:
+                    case "todo":
+                        tasks[element]["status"] = "todo"
+                    case "in-progress":
+                        tasks[element]["status"] = "in-progress"
+                    case "done":
+                        tasks[element]["status"] = "done"
+                    case _:
+                        raise ValueError("Invalid status.")
+                        break
+                print(f"Task marked successfully (ID: {id})")
+                found = True
+                break
+    except ValueError:
+        print(f"Invalid ID format: '{id}'. Please provide a numeric ID.")
+    else:
+        if found:
+            with open("tasks.json", "w") as file:
+                json.dump(tasks, file, indent=4)
+        else:
+            print(f"No task found with ID: {id}. Please provide a valid task ID.")
+
+
 def delete(id) -> None:
     """
     Function to delete tasks.
@@ -110,6 +150,27 @@ def main(operation) -> None:
                 raise ValueError("Task id is required for the 'delete' operation.")
             task_id = sys.argv[2]
             delete(task_id)
+        case "mark-todo":
+            if len(sys.argv) <= 2:
+                raise ValueError(
+                    "Task id is required for the 'mark-in-progress' operation."
+                )
+            task_id = sys.argv[2]
+            mark(task_id, "todo")
+        case "mark-in-progress":
+            if len(sys.argv) <= 2:
+                raise ValueError(
+                    "Task id is required for the 'mark-in-progress' operation."
+                )
+            task_id = sys.argv[2]
+            mark(task_id, "in-progress")
+        case "mark-done":
+            if len(sys.argv) <= 2:
+                raise ValueError(
+                    "Task id is required for the 'mark-in-progress' operation."
+                )
+            task_id = sys.argv[2]
+            mark(task_id, "done")
         case _:
             raise ValueError("Invalid operation.")
 
