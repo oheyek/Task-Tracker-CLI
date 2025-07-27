@@ -28,8 +28,30 @@ def add(task) -> None:
         print(f"Task added successfully (ID: {id})")
 
 
-def update():
-    print("Update operation")
+def update(id, task):
+    """
+    Function to update a existing task.
+    :param id: The id of a task to be updated.
+    :param task: The new description for a selected task.
+    """
+    tasks = []
+    try:
+        with open("tasks.json", "r") as file:
+            tasks = json.load(file)
+    except FileNotFoundError:
+        pass
+    try:
+        task_id = int(id) - 1
+        tasks[task_id]["description"] = str(task)
+        tasks[task_id]["updatedAt"] = date
+    except ValueError:
+        print(f"Invalid ID format: '{id}'. Please provide a numeric ID.")
+    except IndexError:
+        print(f"No task found with ID: {id}. Please provide a valid task ID.")
+    else:
+        with open("tasks.json", "w") as file:
+            json.dump(tasks, file, indent=4)
+            print(f"Task updated successfully (ID: {id})")
 
 
 def delete():
@@ -50,7 +72,13 @@ def main(operation) -> None:
             task_name = sys.argv[2]
             add(task_name)
         case "update":
-            update()
+            if len(sys.argv) <= 3:
+                raise ValueError(
+                    "Task id and new description is required for the 'update' operation."
+                )
+            task_id = sys.argv[2]
+            task_name = sys.argv[3]
+            update(task_id, task_name)
         case "delete":
             delete()
         case _:
