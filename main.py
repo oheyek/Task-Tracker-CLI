@@ -55,6 +55,10 @@ def update(id, task) -> None:
 
 
 def delete(id) -> None:
+    """
+    Function to delete tasks.
+    :param id: Id of a task to be deleted.
+    """
     tasks = []
     try:
         with open("tasks.json", "r") as file:
@@ -63,16 +67,15 @@ def delete(id) -> None:
         pass
     found = False
     try:
+        id = int(id)
         for element in range(len(tasks)):
-            if tasks[element]["id"] == int(id):
+            if tasks[element]["id"] == id:
                 del tasks[element]
                 print(f"Task deleted successfully (ID: {id})")
                 found = True
                 break
     except ValueError:
         print(f"Invalid ID format: '{id}'. Please provide a numeric ID.")
-    except IndexError:
-        print(f"No task found with ID: {id}. Please provide a valid task ID.")
     else:
         if found:
             with open("tasks.json", "w") as file:
