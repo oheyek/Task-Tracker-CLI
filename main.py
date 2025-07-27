@@ -71,16 +71,11 @@ def mark(id, status) -> None:
         id = int(id)
         for element in range(len(tasks)):
             if tasks[element]["id"] == id:
-                match status:
-                    case "todo":
-                        tasks[element]["status"] = "todo"
-                    case "in-progress":
-                        tasks[element]["status"] = "in-progress"
-                    case "done":
-                        tasks[element]["status"] = "done"
-                    case _:
-                        raise ValueError("Invalid status.")
-                        break
+                allowed_status = ["todo", "in-progress", "done"]
+                if status in allowed_status:
+                    tasks[element]["status"] = status
+                else:
+                    raise ValueError("Invalid status.")
                 print(f"Task marked successfully (ID: {id})")
                 found = True
                 break
@@ -152,9 +147,7 @@ def main(operation) -> None:
             delete(task_id)
         case "mark-todo":
             if len(sys.argv) <= 2:
-                raise ValueError(
-                    "Task id is required for the 'mark-in-progress' operation."
-                )
+                raise ValueError("Task id is required for the 'mark-todo' operation.")
             task_id = sys.argv[2]
             mark(task_id, "todo")
         case "mark-in-progress":
@@ -166,9 +159,7 @@ def main(operation) -> None:
             mark(task_id, "in-progress")
         case "mark-done":
             if len(sys.argv) <= 2:
-                raise ValueError(
-                    "Task id is required for the 'mark-in-progress' operation."
-                )
+                raise ValueError("Task id is required for the 'mark-done' operation.")
             task_id = sys.argv[2]
             mark(task_id, "done")
         case _:
