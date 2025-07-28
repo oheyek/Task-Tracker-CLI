@@ -124,6 +124,19 @@ def delete(id) -> None:
             print(f"No task found with ID: {id}. Please provide a valid task ID.")
 
 
+def display(text) -> None:
+    """
+    Function to display tasks in a proper format.
+    :param text: The task to be displayed.
+    """
+    print("==========")
+    print(f"ID: {text['id']}")
+    print(f"Description: {text['description']}")
+    print(f"Status: {text['status']}")
+    print(f"Created at: {text['createdAt']}")
+    print(f"Updated at: {text['updatedAt']}")
+
+
 def list_tasks(status) -> None:
     """
     Function to list tasks basing on status.
@@ -140,21 +153,11 @@ def list_tasks(status) -> None:
     if status in allowed_search:
         if status == "all":
             for task in range(len(tasks)):
-                print("==========")
-                print(f"ID: {tasks[task]['id']}")
-                print(f"Description: {tasks[task]['description']}")
-                print(f"Status: {tasks[task]['status']}")
-                print(f"Created at: {tasks[task]['createdAt']}")
-                print(f"Updated at: {tasks[task]['updatedAt']}")
+                display(tasks[task])
         else:
             for task in range(len(tasks)):
                 if tasks[task]["status"] == status:
-                    print("==========")
-                    print(f"ID: {tasks[task]['id']}")
-                    print(f"Description: {tasks[task]['description']}")
-                    print(f"Status: {tasks[task]['status']}")
-                    print(f"Created at: {tasks[task]['createdAt']}")
-                    print(f"Updated at: {tasks[task]['updatedAt']}")
+                    display(tasks[task])
     else:
         raise ValueError("Invalid task status.")
 

@@ -6,7 +6,7 @@ setup(
     py_modules=["main"],
     entry_points={
         "console_scripts": [
-            "task-cli = main:main",  # nazwa polecenia = plik:funkcja
+            "task-cli = main:main",
         ],
     },
 )
