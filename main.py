@@ -1,6 +1,28 @@
 import json
 import sys
 import datetime
+from typing import List
+
+
+def load_tasks() -> List:
+    """
+    Function to load tasks from a file.
+    :return: List for a loaded tasks.
+    """
+    try:
+        with open("tasks.json", "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
+
+
+def save_tasks(tasks) -> None:
+    """
+    Function to save tasks to a file.
+    :param tasks: Task list to be saved.
+    """
+    with open("tasks.json", "w") as file:
+        json.dump(tasks, file, indent=4)
 
 
 def add(task) -> None:
@@ -8,12 +30,7 @@ def add(task) -> None:
     Function to add a new task to the tasks.json file.
     :param task: Task description to be added.
     """
-    tasks = []
-    try:
-        with open("tasks.json", "r") as file:
-            tasks = json.load(file)
-    except FileNotFoundError:
-        pass
+    tasks = load_tasks()
     id = max((task["id"] for task in tasks), default=0) + 1
     new_task = {
         "id": id,
@@ -23,9 +40,8 @@ def add(task) -> None:
         "updatedAt": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
     }
     tasks.append(new_task)
-    with open("tasks.json", "w") as file:
-        json.dump(tasks, file, indent=4)
-        print(f"Task added successfully (ID: {id})")
+    save_tasks(tasks)
+    print(f"Task added successfully (ID: {id})")
 
 
 def update(id, task) -> None:
@@ -34,12 +50,7 @@ def update(id, task) -> None:
     :param id: The id of a task to be updated.
     :param task: The new description for a selected task.
     """
-    tasks = []
-    try:
-        with open("tasks.json", "r") as file:
-            tasks = json.load(file)
-    except FileNotFoundError:
-        pass
+    tasks = load_tasks()
     try:
         task_id = int(id) - 1
         tasks[task_id]["description"] = str(task)
@@ -51,9 +62,8 @@ def update(id, task) -> None:
     except IndexError:
         print(f"No task found with ID: {id}. Please provide a valid task ID.")
     else:
-        with open("tasks.json", "w") as file:
-            json.dump(tasks, file, indent=4)
-            print(f"Task updated successfully (ID: {id})")
+        save_tasks(tasks)
+        print(f"Task updated successfully (ID: {id})")
 
 
 def mark(id, status) -> None:
@@ -62,12 +72,7 @@ def mark(id, status) -> None:
     :param id: Id of a task to be marked.
     :param status: The status of the task.
     """
-    tasks = []
-    try:
-        with open("tasks.json", "r") as file:
-            tasks = json.load(file)
-    except FileNotFoundError:
-        pass
+    tasks = load_tasks()
     found = False
     try:
         id = int(id)
@@ -88,8 +93,7 @@ def mark(id, status) -> None:
         print(f"Invalid ID format: '{id}'. Please provide a numeric ID.")
     else:
         if found:
-            with open("tasks.json", "w") as file:
-                json.dump(tasks, file, indent=4)
+            save_tasks(tasks)
         else:
             print(f"No task found with ID: {id}. Please provide a valid task ID.")
 
@@ -99,12 +103,7 @@ def delete(id) -> None:
     Function to delete tasks.
     :param id: Id of a task to be deleted.
     """
-    tasks = []
-    try:
-        with open("tasks.json", "r") as file:
-            tasks = json.load(file)
-    except FileNotFoundError:
-        pass
+    tasks = load_tasks()
     found = False
     try:
         id = int(id)
@@ -118,8 +117,7 @@ def delete(id) -> None:
         print(f"Invalid ID format: '{id}'. Please provide a numeric ID.")
     else:
         if found:
-            with open("tasks.json", "w") as file:
-                json.dump(tasks, file, indent=4)
+            save_tasks(tasks)
         else:
             print(f"No task found with ID: {id}. Please provide a valid task ID.")
 
@@ -129,7 +127,7 @@ def display(text) -> None:
     Function to display tasks in a proper format.
     :param text: The task to be displayed.
     """
-    print("==========")
+    print("====================")
     print(f"ID: {text['id']}")
     print(f"Description: {text['description']}")
     print(f"Status: {text['status']}")
@@ -142,13 +140,7 @@ def list_tasks(status) -> None:
     Function to list tasks basing on status.
     :param status: The status of the task to be searched.
     """
-    tasks = []
-    try:
-        with open("tasks.json", "r") as file:
-            tasks = json.load(file)
-    except FileNotFoundError:
-        pass
-
+    tasks = load_tasks()
     allowed_search = ["all", "todo", "in-progress", "done"]
     if status in allowed_search:
         if status == "all":
