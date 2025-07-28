@@ -19,8 +19,8 @@ def add(task) -> None:
         "id": id,
         "description": task,
         "status": "todo",
-        "createdAt": date,
-        "updatedAt": date,
+        "createdAt": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "updatedAt": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
     }
     tasks.append(new_task)
     with open("tasks.json", "w") as file:
@@ -43,7 +43,9 @@ def update(id, task) -> None:
     try:
         task_id = int(id) - 1
         tasks[task_id]["description"] = str(task)
-        tasks[task_id]["updatedAt"] = date
+        tasks[task_id]["updatedAt"] = datetime.datetime.now().strftime(
+            "%Y-%m-%dT%H:%M:%S"
+        )
     except ValueError:
         print(f"Invalid ID format: '{id}'. Please provide a numeric ID.")
     except IndexError:
@@ -74,6 +76,9 @@ def mark(id, status) -> None:
                 allowed_status = ["todo", "in-progress", "done"]
                 if status in allowed_status:
                     tasks[element]["status"] = status
+                    tasks[element]["updatedAt"] = datetime.datetime.now().strftime(
+                        "%Y-%m-%dT%H:%M:%S"
+                    )
                 else:
                     raise ValueError("Invalid status.")
                 print(f"Task marked successfully (ID: {id})")
@@ -119,11 +124,49 @@ def delete(id) -> None:
             print(f"No task found with ID: {id}. Please provide a valid task ID.")
 
 
-def main(operation) -> None:
+def display(text) -> None:
+    """
+    Function to display tasks in a proper format.
+    :param text: The task to be displayed.
+    """
+    print("==========")
+    print(f"ID: {text['id']}")
+    print(f"Description: {text['description']}")
+    print(f"Status: {text['status']}")
+    print(f"Created at: {text['createdAt']}")
+    print(f"Updated at: {text['updatedAt']}")
+
+
+def list_tasks(status) -> None:
+    """
+    Function to list tasks basing on status.
+    :param status: The status of the task to be searched.
+    """
+    tasks = []
+    try:
+        with open("tasks.json", "r") as file:
+            tasks = json.load(file)
+    except FileNotFoundError:
+        pass
+
+    allowed_search = ["all", "todo", "in-progress", "done"]
+    if status in allowed_search:
+        if status == "all":
+            for task in range(len(tasks)):
+                display(tasks[task])
+        else:
+            for task in range(len(tasks)):
+                if tasks[task]["status"] == status:
+                    display(tasks[task])
+    else:
+        raise ValueError("Invalid task status.")
+
+
+def main() -> None:
     """
     Main function of a program.
-    :param operation: Operation to be performed.
     """
+    operation = sys.argv[1]
     match operation:
         case "add":
             if len(sys.argv) <= 2:
@@ -162,6 +205,13 @@ def main(operation) -> None:
                 raise ValueError("Task id is required for the 'mark-done' operation.")
             task_id = sys.argv[2]
             mark(task_id, "done")
+        case "list":
+            if len(sys.argv) <= 2:
+                status = "all"
+            else:
+                status = sys.argv[2]
+            list_tasks(status)
+
         case _:
             raise ValueError("Invalid operation.")
 
@@ -170,6 +220,4 @@ if __name__ == "__main__":
     if len(sys.argv) <= 1:
         print("Error: Missing operation. Usage: python main.py <operation> [args]")
         sys.exit(1)
-    operation = sys.argv[1]
-    date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    main(operation)
+    main()
